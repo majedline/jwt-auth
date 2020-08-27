@@ -1,7 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const authRouter = require('./routes/authRoutes');
-const { response } = require('express');
+// const { response } = require('express');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
@@ -9,6 +10,8 @@ const app = express();
 app.use(express.static('public'));
 // takes any json data, and passes it to a javascript object and attached this object so we can use it in the request handler.
 app.use(express.json());
+// cookie parser middleware.
+app.use(cookieParser());
 
 // view engine
 app.set('view engine', 'ejs');
@@ -27,12 +30,3 @@ app.get('/', (req, res) => res.render('home'));
 app.get('/smoothies', (req, res) => res.render('smoothies'));
 app.use(authRouter);
 
-//cookies
-app.get('/set-cookies', (req, res) => {
-  res.setHeader('Set-Cookie', 'newUser=true');
-  res.send('you got a cookie');
-});
-
-app.get('/read-cookies', (req, res) => {
-
-});
