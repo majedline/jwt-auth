@@ -10,8 +10,8 @@ const handleError = (err) => {
     //duplication errors
     if (err.code === 11000) {
         errorResponses.email = "The email is already registerd";
+        return errorResponses;
     }
-
 
     // validation errors
     if (err.message.includes("user validation failed")) {
@@ -19,7 +19,6 @@ const handleError = (err) => {
             errorResponses[error.properties.path] = error.properties.message;
         });
     }
-
 
     return errorResponses;
 }
@@ -46,20 +45,20 @@ module.exports.signup_post = async (req, res) => {
         const user = await User.create({ email, password });
         const token = createToken(user._id);
         res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
-
         res.status(201).json({ user: user._id });
     } catch (err) {
         const errors = handleError(err);
-        res.status(400).json(errors);
+        res.status(400).json({ errors: errors });
     }
 }
 
 module.exports.login_post = async (req, res) => {
     const { email, password } = req.body;
     try {
-        console.log(email)
+        const user = await User.login(email, password);
+        res.status(200).json({ user: user._id });
     } catch (err) {
-
+        res.status(400).json({});
     }
     res.send('new login');
 }
