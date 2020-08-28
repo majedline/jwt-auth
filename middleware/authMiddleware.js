@@ -1,4 +1,6 @@
 const jwt = require('jsonwebtoken');
+const User = require('../models/User');
+const { response } = require('express');
 
 const requireAuth = (req, res, next) => {
     // get the cookie
@@ -20,7 +22,35 @@ const requireAuth = (req, res, next) => {
     } else {
         // token not found so send the user to the login page.
         res.redirect("/login");
+
     }
 }
 
-module.exports = { requireAuth };
+// check current user
+const checkUser = (req, res, next) => {
+    // get the cookie
+    const token = req.cookies.jwt;
+
+    // check if token exists & is verified
+    if (token) {
+        // check the signature of the token
+        jwt.verify(token, "mySecretPassword", async (err, decodedToken) => {
+            if (err) {
+                console.log(err.message);
+                response.locals.user = null;
+                next();
+            } else {
+                console.log(decodedToken);
+                let user = await User.findById(decodedToken.id);
+                response.locals.user = user;
+                next();
+            }
+        });
+
+    } else {
+        response.locals.user = null;
+        next();
+    }
+}
+
+module.exports = { requireAuth, checkUser };
