@@ -37,18 +37,19 @@ const checkUser = (req, res, next) => {
         jwt.verify(token, "mySecretPassword", async (err, decodedToken) => {
             if (err) {
                 console.log(err.message);
-                response.locals.user = null;
+                res.locals.user = null;
                 next();
+                
             } else {
                 console.log(decodedToken);
                 let user = await User.findById(decodedToken.id);
-                response.locals.user = user;
+                res.locals.user = user;
                 next();
             }
         });
 
     } else {
-        response.locals.user = null;
+        res.locals.user = null;
         next();
     }
 }
