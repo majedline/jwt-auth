@@ -51,6 +51,17 @@ userSchema.statics.login = async function (email, password) {
     throw Error("Incorrect email"); // incorrect email
 }
 
+userSchema.statics.getUserRole = async function (userID) {
+    let user = await this.findById(userID);
+    if (user) {
+        return { role: user.role };
+    }
+    throw Error("Permission denied"); // incorrect password
+
+}
+
+
+
 const User = mongoose.model('user', userSchema);
 
 module.exports = User;

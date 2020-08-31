@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const authRouter = require('./routes/authRoutes');
 const cookieParser = require('cookie-parser');
-const { requireAuth, checkUser } = require('./middleware/authMiddleware');
+const { requireAuth, checkUser, adminNeeded } = require('./middleware/authMiddleware');
 
 const app = express();
 
@@ -29,5 +29,7 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true, useCr
 app.get('*', checkUser);// apply this checkuser to every page
 app.get('/', (req, res) => res.render('home'));
 app.get('/smoothies', requireAuth, (req, res) => res.render('smoothies'));
+app.get('/admin', requireAuth, adminNeeded, (req, res) => res.render('admin'));
+app.get('/permissionDenied', (req, res) => res.render('permissionDenied'));
 app.use(authRouter);
 
